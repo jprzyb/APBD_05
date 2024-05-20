@@ -1,0 +1,41 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Users\\ASRock\\OneDrive\\Pulpit\\Repositories\\APBD_05\\APBD_05\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\APBD_05.bundle.scp.css",
+      "PackagePath": "staticwebassets\\APBD_05.bundle.scp.css"
+    },
+    {
+      "Id": "C:\\Users\\ASRock\\OneDrive\\Pulpit\\Repositories\\APBD_05\\APBD_05\\wwwroot\\app.css",
+      "PackagePath": "staticwebassets\\app.css"
+    },
+    {
+      "Id": "C:\\Users\\ASRock\\OneDrive\\Pulpit\\Repositories\\APBD_05\\APBD_05\\wwwroot\\bootstrap\\bootstrap.min.css",
+      "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css"
+    },
+    {
+      "Id": "C:\\Users\\ASRock\\OneDrive\\Pulpit\\Repositories\\APBD_05\\APBD_05\\wwwroot\\bootstrap\\bootstrap.min.css.map",
+      "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\ASRock\\OneDrive\\Pulpit\\Repositories\\APBD_05\\APBD_05\\wwwroot\\favicon.png",
+      "PackagePath": "staticwebassets\\favicon.png"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.APBD_05.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.APBD_05.props",
+      "PackagePath": "build\\APBD_05.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.APBD_05.props",
+      "PackagePath": "buildMultiTargeting\\APBD_05.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.APBD_05.props",
+      "PackagePath": "buildTransitive\\APBD_05.props"
+    }
+  ],
+  "ElementsToRemove": []
+}
