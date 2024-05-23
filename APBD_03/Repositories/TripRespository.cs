@@ -1,4 +1,5 @@
 ﻿using APBD_03.Model;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 
 namespace APBD_03.Repositories;
@@ -60,7 +61,9 @@ public class TripRespository : ITripRepository
             result.Add(tripCountryClient);
         }
         return result;
-    } // eof method
+    }
+
+    // eof method
     private List<Country> getCountriesByTripId(SqlConnection con, int IdTrip)
     {
         var result = new List<Country>();
@@ -150,12 +153,113 @@ public class TripRespository : ITripRepository
             {
                 IdClient = (int)dr["IdClient"],
                 IdTrip = (int)dr["IdTrip"],
-                RegisteredAt = (int)dr["RegisteredAt"],
-                PaymentDate = (int)dr["PaymentDate"]
+                RegisteredAt = (DateTime)dr["RegisteredAt"],
+                PaymentDate = (DateTime)dr["PaymentDate"]
             };
             result.Add(grade);
         }
         return result;
+    } // eof method
+    public int DeleteClient(int id)
+    {
+        string deleteQuery = "DELETE FROM trip.Client WHERE IdClient = @IdClient";
+        int affectedCount = 0;
+        
+        using var con = new SqlConnection(_connectionString);
+        con.Open();
+        if(!clientHasTripsAssigned(con, id)){}
+        {
+            using var cmd = new SqlCommand();
+            cmd.Connection = con;
+            cmd.CommandText = deleteQuery;
+            cmd.Parameters.AddWithValue("@IdClient", id);
+            affectedCount = cmd.ExecuteNonQuery();
+        }
+        return affectedCount;
     }
-    // eof method
+
+    private bool clientHasTripsAssigned(SqlConnection con, int id)
+    {
+        using var cmd = new SqlCommand();
+        cmd.Connection = con;
+        cmd.CommandText = "SELECT COUNT(*) FROM trip.Client_Trip WHERE IdClient = @IdClient";
+        cmd.Parameters.AddWithValue("@IdClient", id);
+        return cmd.ExecuteNonQuery() > 0;
+
+    } // eof method
+    
+    public int AssigneClientToTrip(AssigneClient assigneClient)
+    {
+        using var con = new SqlConnection(_connectionString);
+        con.Open();
+        var id = new Random().Next(0, 10001);
+        if (!clientExist(con, assigneClient.Pesel))
+        {
+            createClient(con, assigneClient, id);
+        }
+
+        if (isClientAssignedToTrip(con, assigneClient)) return -1;
+        if (doesTheTripExist(con, assigneClient)) return -1;
+        using var cmd = new SqlCommand();
+        cmd.Connection = con;
+        cmd.CommandText = "INSERT INTO trip.Client_Trip (IdClient, IdTrip, RegisteredAt, PaymentDate) VALUES (@IdClient, @IdTrip, @RegisteredAt, @PaymentDate)";
+        cmd.Parameters.AddWithValue("@IdClient", getClientIdByPesel(con, assigneClient.Pesel));
+        cmd.Parameters.AddWithValue("@IdTrip", assigneClient.IdTrip);
+        cmd.Parameters.AddWithValue("@RegisteredAt", DateTime.Now.Date);
+        cmd.Parameters.AddWithValue("@PaymentDate", assigneClient.PaymentDate);
+        var affectedCount =  cmd.ExecuteNonQuery();
+        return affectedCount;
+    }
+
+    private bool doesTheTripExist(SqlConnection con, AssigneClient assigneClient)
+    {
+        using var cmd = new SqlCommand();
+        cmd.Connection = con;
+        cmd.CommandText = "SELECT COUNT(*) FROM trip.Trip WHERE IdTrip = @IdTrip";
+        cmd.Parameters.AddWithValue("@IdTrip", assigneClient.IdTrip);
+        return cmd.ExecuteNonQuery() > 0;
+    }
+
+    private bool isClientAssignedToTrip(SqlConnection con, AssigneClient assigneClient)
+    {
+        using var cmd = new SqlCommand();
+        cmd.Connection = con;
+        cmd.CommandText = "SELECT COUNT(*) FROM trip.Client_Trip WHERE IdClient = @IdClient AND IdTrip = @IdTrip";
+        cmd.Parameters.AddWithValue("@IdClient", getClientIdByPesel(con,assigneClient.Pesel));
+        cmd.Parameters.AddWithValue("@IdTrip", assigneClient.IdTrip);
+        return cmd.ExecuteNonQuery() > 0;
+    }
+
+    private int getClientIdByPesel(SqlConnection con, string Pesel)
+    {
+        using var cmd = new SqlCommand();
+        cmd.Connection = con;
+        cmd.CommandText = "SELECT IdClient FROM trip.Client WHERE Pesel = @Pesel";
+        cmd.Parameters.AddWithValue("@Pesel", Pesel);
+        var dr = cmd.ExecuteReader();
+        return (int)dr["IdClient"];
+    }
+
+    private void createClient(SqlConnection con, AssigneClient assigneClient, int id)
+    {
+        using var cmd = new SqlCommand();
+        cmd.Connection = con;
+        cmd.CommandText = "INSERT INTO trip.Client (IdClient, FirstName, LastName, Email, Telephone, Pesel) VALUES (@IdClient, @FirstName, @LastName, @Email, @Telephone, @Pesel)";
+        cmd.Parameters.AddWithValue("@IdClient", id);
+        cmd.Parameters.AddWithValue("@FirstName", assigneClient.FirstName);
+        cmd.Parameters.AddWithValue("@LastName", assigneClient.LastName);
+        cmd.Parameters.AddWithValue("@Email", assigneClient.Email);
+        cmd.Parameters.AddWithValue("@Telephone", assigneClient.Telephone);
+        cmd.Parameters.AddWithValue("@Pesel", assigneClient.Pesel);
+        cmd.ExecuteNonQuery();
+    }
+
+    private bool clientExist(SqlConnection con, string clientPesel)
+    {
+        using var cmd = new SqlCommand();
+        cmd.Connection = con;
+        cmd.CommandText = "SELECT COUNT(*) FROM trip.Client WHERE Pesel LIKE @Pesel";
+        cmd.Parameters.AddWithValue("@Pesel", clientPesel);
+        return cmd.ExecuteNonQuery() > 0;
+    }
 }

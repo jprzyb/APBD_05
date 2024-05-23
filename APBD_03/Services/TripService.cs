@@ -1,5 +1,6 @@
 ﻿using APBD_03.Model;
 using APBD_03.Repositories;
+using Microsoft.AspNetCore.Mvc;
 
 namespace APBD_03.Services;
 
@@ -15,5 +16,15 @@ public class TripService : ITripService
     {
         //Business logic
         return _tripRepository.GetTrips();
+    }
+
+    public int DeleteClient(int id)
+    {
+        return _tripRepository.DeleteClient(id);
+    }
+
+    public int AssigneClientToTrip(AssigneClient assigneClient)
+    {
+        return _tripRepository.AssigneClientToTrip(assigneClient);
     }
 }
